@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<!--添加canvas标签-->
+<!--最好不要使用css，而是内置标签指定宽高-->
+<canvas id="canvas" width="1400" height="500" style="margin: 0 auto; border: 1px black solid;">
+    <!--如果浏览器不支持canvas，会显示标签中的内容，否则，标签中的内容会被忽略-->
+    当前浏览器不支持canvas
+</canvas>
+</body>
+<script src="digit.js"></script>
+<script>
+    window.onload = function () {
+        const R = 8; // 圆点的半径
+        const rectWidth = 15*(R+1); // 每个数字占居的宽度
+        const WIDTH = 1400;
+        const HEIGHT = 500;
+
+        /**
+         */
+        const canvas = document.getElementById('canvas');
+        canvas.width = WIDTH;
+        canvas.height = HEIGHT;
+        const context = canvas.getContext('2d');
+        if (!context) {
+            alert('当前浏览器不支持canvas');
+            return;
+        }
+
+        /**
+         * 绘制一个圆点
+         * @param x
+         * @param y
+         */
+        function drawCircle(x, y, color='#4e7a91') {
+            context.beginPath();
+            context.arc(x, y, R, 0, 2*Math.PI)
+            context.fillStyle = color;
+            context.fill();
+            context.closePath();
+        }
+
+        const balls = [];
+
+        /**
+         *  随机返回1或-1
+         *
+         *
+         * */
+        function plusOrMinus() {
+            const temp = Math.random()*2;
+            if (temp>=1) {
+                return -1;
+            } else {
+                return 1;
+            }
+        }
+        
+        /**
+         * 绘制一个数字
+         * @param num 数字
+         * @param offset x轴偏移量
+         */
+        function drawNum(num, offset, colorful=false) {
+            offset += 227;
+            const rect = digit[num];
+            for (let i in rect) {
+                for (let j in rect[i]) {
+                    const isDraw = rect[i][j];  //如果该值为0，则不绘制圆，如果为1，绘制圆点
+                    if (isDraw == 1) {
+                        drawCircle(offset+(2*j+1)*(R+1), (2*i+1)*(R+1));  //画圆心
+
+                        if (colorful) {
+                            // 再画一个炫彩小球
+                            const ball = {x: offset+(2*j+1)*(R+1), y:(2*i+1)*(R+1), a:1.25, vx: plusOrMinus()*(Math.random()*5+3), vy: -(Math.random()*5+3), color: getRandomColor()};
+                            balls.push(ball);
+                        }
+                    }
+                }
+            }
+        }
+
+        function draw(hour, minute, second, colorful) {
+            drawNum(parseInt(hour/10), 0);
+            drawNum(parseInt(hour%10), 1*rectWidth);
+            drawNum(10,2*rectWidth);
+            drawNum(parseInt(minute/10),2.5*rectWidth);
+            drawNum(parseInt(minute/10),3.5*rectWidth);
+            drawNum(10,4.5*rectWidth);
+            drawNum(parseInt(second/10),5*rectWidth);
+            drawNum(parseInt(second%10),6*rectWidth, colorful);
+        }
+
+        let oldSecond;
+        setInterval(function () {
+            const date = new Date();
+            const hour = date.getHours();
+            const minute = date.getMinutes();
+            const second = date.getSeconds();
+            context.clearRect(-500, -500, 3000, 1900);
+            // 如果时间更新了，重新绘制
+            draw(hour, minute, second, oldSecond != second);
+            oldSecond = second;
+            const delBalls = [];
+            for (const ball of balls) {
+                ballJump(ball);
+                if (ball.x + R < 0 || ball.x - R > WIDTH) {
+                    delBalls.push(ball);
+                }
+            }
+            //
+            // for (const delBall of delBalls) {
+            //     balls.splice(balls.indexOf(delBall), 1);
+            // }
+
+            console.log(balls.length);
+        }, 50);
+
+        /**
+         * 获取一个随机颜色
+         */
+        function getRandomColor() {
+            const hex = ['0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'];
+            let color = '#';
+            for (let i=0;i<6;i++) {
+                color += hex[parseInt(Math.random()*15)];
+            }
+            return color;
+        }
+
+        /**
+         * 小球跳动
+         * 加速度公式 a=v/t.  a=加速度，v=速度，t=时间
+         */
+        function ballJump(ball) {
+            ball.x += ball.vx;
+            if (ball.y + ball.vy + R > HEIGHT) {
+                ball.y = HEIGHT - ball.vy - R;
+                ball.vy = - ball.vy * 0.7;
+            }
+            ball.vy += ball.a;
+            ball.y += ball.vy;
+            context.beginPath();
+            context.arc(ball.x, ball.y, R, 0, 2*Math.PI, true);
+            context.fillStyle = ball.color;
+            context.fill();
+            context.closePath();
+        }
+
+
+
+    }
+</script>
+</html>

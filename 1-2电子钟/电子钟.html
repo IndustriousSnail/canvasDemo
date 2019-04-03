@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<!--添加canvas标签-->
+<!--最好不要使用css，而是内置标签指定宽高-->
+<canvas id="canvas" width="1400" height="400" style="margin: 100px auto;">
+    <!--如果浏览器不支持canvas，会显示标签中的内容，否则，标签中的内容会被忽略-->
+    当前浏览器不支持canvas
+</canvas>
+</body>
+<script src="digit.js"></script>
+<script>
+    window.onload = function () {
+        /**
+         * 知识点1：
+         * context.arc(x: number, y: number, radius: number, startAngle: number, endAngle: number, anticlockwise?: boolean): void;
+         * x,y，圆心的坐标
+         * radius: 半径
+         * startAngle,endAngle，开始角度，结束角度。和坐标轴一样，最大值为 2PI=360°。
+         * anticlockwise：是否逆时针绘制，默认false
+         *
+         * 知识点2：
+         * context.clearRect(x: number, y: number, w: number, h: number): void;
+         * x,y，w,h 从x,y坐标开始，清除图案，宽高分别为w,h
+         */
+        var canvas = document.getElementById('canvas');
+        var context = canvas.getContext('2d');
+        if (!context) {
+            alert('当前浏览器不支持canvas');
+            return;
+        }
+
+        const R = 8; // 圆点的半径
+        const rectWidth = 15*(R+1);
+
+        /**
+         * 绘制一个圆点
+         * @param x
+         * @param y
+         */
+        function drawCircle(x, y) {
+            context.beginPath();
+            context.arc(x, y, R, 0, 2*Math.PI)
+            context.fillStyle = '#4e7a91';
+            context.fill();
+            context.closePath();
+        }
+
+        /**
+         * 绘制一个数字
+         * @param num 数字
+         * @param offset x轴偏移量
+         */
+        function drawNum(num, offset) {
+            offset += 227;
+            const rect = digit[num];
+            for (let i in rect) {
+                for (let j in rect[i]) {
+                    const isDraw = rect[i][j];  //如果该值为0，则不绘制圆，如果为1，绘制圆点
+                    if (isDraw == 1) {
+                        drawCircle(offset+(2*j+1)*(R+1), (2*i+1)*(R+1))  //画圆心
+                    }
+                }
+
+            }
+        }
+
+        function draw(hour, minute, second) {
+            drawNum(parseInt(hour/10), 0);
+            drawNum(parseInt(hour%10), 1*rectWidth);
+            drawNum(10,2*rectWidth);
+            drawNum(parseInt(minute/10),2.5*rectWidth);
+            drawNum(parseInt(minute/10),3.5*rectWidth);
+            drawNum(10,4.5*rectWidth);
+            drawNum(parseInt(second/10),5*rectWidth);
+            drawNum(parseInt(second%10),6*rectWidth);
+        }
+
+        let oldSecond;
+        setInterval(function () {
+            const date = new Date();
+            const hour = date.getHours();
+            const minute = date.getMinutes();
+            const second = date.getSeconds();
+            if (oldSecond != second) {
+                // 如果时间更新了，重新绘制
+                context.clearRect(0, 0, 1400, 400);
+                draw(hour, minute, second);
+            }
+        }, 50);
+
+
+    }
+</script>
+</html>

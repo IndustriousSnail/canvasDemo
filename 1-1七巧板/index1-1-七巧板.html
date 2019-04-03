@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <!--添加canvas标签-->
+    <!--最好不要使用css，而是内置标签指定宽高-->
+    <canvas id="canvas" width="1000" height="1000">
+        <!--如果浏览器不支持canvas，会显示标签中的内容，否则，标签中的内容会被忽略-->
+        当前浏览器不支持canvas
+    </canvas>
+</body>
+<script>
+    window.onload = function () {
+        var canvas = document.getElementById('canvas');
+        var context = canvas.getContext('2d');
+        if (!context) {
+            alert('当前浏览器不支持canvas');
+            return;
+        }
+
+        var items = [
+            {
+                borders: [[0,0], [1000,0], [500,500], [0,0]],
+                color: '#123456'
+            },
+            {
+                borders: [[0,0], [0,1000], [500,500], [0,0]],
+                color: '#234567'
+            },
+            {
+                borders: [[1000,0], [750,250], [1000,500], [1000,0]],
+                color: '#345678'
+            },
+            {
+                borders: [[750,250], [500,500], [750,750], [1000,500], [750, 250]],
+                color: '#567891'
+            },
+            {
+                borders: [[500,500], [250,750], [750,750], [500,500]],
+                color: '#678912'
+            },
+            {
+                borders: [[250,750], [0,1000], [500,1000], [750,750]],
+                color: '#789123'
+            },
+            {
+                borders: [[1000,500], [500,1000], [1000,1000], [1000,500]],
+                color: '#891234'
+            },
+        ];
+
+        for (const item of items){
+            context.beginPath();  // 开始路径
+            context.moveTo(item.borders[0][0], item.borders[0][1]);  // 选择开始坐标
+            for (let i=0; i<item.borders.length; i++) {
+                context.lineTo(item.borders[i][0], item.borders[i][1]);  // 移动线
+            }
+            context.lineWidth = 5;  // 指定线的宽度
+            context.strokeStyle = 'black';  // 指定线的颜色
+            context.fillStyle = item.color;  // 指定填充颜色
+            context.fill();  // 填充
+            context.closePath();  // 闭合路径，如果使用它，会将路径首尾相连进行闭合
+            context.stroke();  // 绘制线段
+        }
+
+
+    }
+</script>
+</html>

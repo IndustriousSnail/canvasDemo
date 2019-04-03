@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<!--添加canvas标签-->
+<!--最好不要使用css，而是内置标签指定宽高-->
+<canvas id="canvas" width="500" height="500" style="margin: 0 auto; border: 1px black solid;">
+    <!--如果浏览器不支持canvas，会显示标签中的内容，否则，标签中的内容会被忽略-->
+    当前浏览器不支持canvas
+</canvas>
+</body>
+<script src="digit.js"></script>
+<script>
+    window.onload = function () {
+        const WIDTH = 500;
+        const HEIGHT = 500;
+        const R = 200;
+        const INTERVAL = WIDTH / 2 - R; // 表盘和上边距的间隙
+
+        /**
+         */
+        const canvas = document.getElementById('canvas');
+        canvas.width = WIDTH;
+        canvas.height = HEIGHT;
+        const context = canvas.getContext('2d');
+        if (!context) {
+            alert('当前浏览器不支持canvas');
+            return;
+        }
+
+        /**
+         * 绘制一个圆点
+         * @param x
+         * @param y
+         */
+        function drawCircle(x, y, r, color = '#4e7a91') {
+            context.beginPath();
+            context.arc(x, y, r, 0, 2 * Math.PI)
+            context.fillStyle = color;
+            context.fill();
+            context.closePath();
+        }
+
+        /**
+         * 绘制表盘
+         */
+        function drawPlate() {
+            context.beginPath();
+            context.arc(WIDTH / 2, HEIGHT / 2, R, 0, 2 * Math.PI)
+            context.fillStyle = 'black';
+            context.stroke();
+            context.closePath();
+        }
+
+        /**
+         * 绘制表中心
+         */
+        function drawCenter() {
+            context.beginPath();
+            context.arc(WIDTH / 2, HEIGHT / 2, 5, 0, 2 * Math.PI)
+            context.fillStyle = '#3f4756';
+            context.fill();
+            context.closePath();
+        }
+
+        /**
+         * 绘制表数字
+         */
+        function drawNum() {
+            const r = R-25;
+            context.textAlign = 'center';
+
+            context.font = 'bold 20px 微软雅黑';
+            for (let i=1;i<=12;i++) {
+                const angle = Math.PI/(180/(30*(i)));
+                context.fillText(i.toString(), Math.sin(angle)*r + WIDTH / 2, -Math.cos(angle)*r + HEIGHT / 2 + 7);
+            }
+        }
+
+        /**
+         * 绘制表针
+         */
+        function drawHand(){
+            const date = new Date();
+            const hour = date.getHours();
+            const minute = date.getMinutes();
+            const second = date.getSeconds();
+
+            const hourLength = R-100;
+            const minuteLength = R - 80;
+            const secondLength = R - 50;
+            context.beginPath();
+            context.strokeStyle='#645861'
+            context.lineWidth = 6;
+            context.lineCap = 'round';
+            context.moveTo(WIDTH/2, HEIGHT/2);
+            context.lineTo(Math.sin(Math.PI/(180/(30*(hour))))*hourLength + WIDTH / 2, -Math.cos(Math.PI/(180/(30*(hour))))*hourLength + HEIGHT / 2 + 7);
+            context.stroke();
+            context.closePath();
+
+            context.beginPath();
+            context.strokeStyle='#392f36';
+            context.lineWidth = 4;
+            context.lineCap = 'round';
+            context.moveTo(WIDTH/2, HEIGHT/2);
+            context.lineTo(Math.sin(Math.PI/(180/(6*(minute))))*minuteLength + WIDTH / 2, -Math.cos(Math.PI/(180/(6*(minute))))*minuteLength + HEIGHT / 2 + 7);
+            context.stroke();
+            context.closePath();
+
+            context.beginPath();
+            context.strokeStyle='#2f212a';
+            context.lineWidth = 2;
+            context.lineCap = 'round';
+            context.moveTo(WIDTH/2, HEIGHT/2);
+            context.lineTo(Math.sin(Math.PI/(180/(6*(second))))*secondLength + WIDTH / 2, -Math.cos(Math.PI/(180/(6*(second))))*secondLength + HEIGHT / 2 + 7);
+            context.stroke();
+            context.closePath();
+        }
+
+        setInterval(function () {
+            context.clearRect(0, 0, WIDTH, HEIGHT);
+            drawPlate();
+            drawNum();
+            drawHand();
+            drawCenter();
+        }, 1000);
+
+
+    }
+</script>
+</html>
