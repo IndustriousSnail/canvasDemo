@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<!--添加canvas标签-->
+<!--最好不要使用css，而是内置标签指定宽高-->
+<canvas id="canvas" width="500" height="500" style="margin: 0 auto; border: 1px black solid;">
+    <!--如果浏览器不支持canvas，会显示标签中的内容，否则，标签中的内容会被忽略-->
+    当前浏览器不支持canvas
+</canvas>
+</body>
+<script>
+    window.onload = function () {
+        const WIDTH = 1000;
+        const HEIGHT = 700;
+
+        /**
+         */
+        const canvas = document.getElementById('canvas');
+        canvas.width = WIDTH;
+        canvas.height = HEIGHT;
+        const context = canvas.getContext('2d');
+        if (!context) {
+            alert('当前浏览器不支持canvas');
+            return;
+        }
+
+        function getLoc (e) {
+            // canvas 为你的 canvas ctx 变量
+            const box = canvas.getBoundingClientRect()
+            const mouseX = (e.clientX - box.left) * canvas.width / box.width
+            const mouseY = (e.clientY - box.top) * canvas.height / box.height
+            return [mouseX, mouseY]
+        }
+
+        let isMouseDown = false
+
+        /**
+         * 当鼠标点击时，绘制路径
+         */
+        canvas.onmousedown = function (e) {
+            isMouseDown = true;
+            context.beginPath();
+            const loc = getLoc(e);  // 获取当前x,y坐标
+            context.moveTo(loc[0], loc[1]);
+        };
+
+        canvas.onmousemove = function (e) {
+            if (isMouseDown) {
+                const loc = getLoc(e);
+                context.lineTo(loc[0], loc[1]);
+                context.stroke();
+            }
+        };
+
+        canvas.onmouseup = function (e) {
+            context.closePath();
+            isMouseDown = false;
+        }
+
+
+
+
+
+    }
+</script>
+</html>
