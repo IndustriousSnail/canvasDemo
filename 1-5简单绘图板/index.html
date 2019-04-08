@@ -28,15 +28,15 @@
             return;
         }
 
-        function getLoc (e) {
+        function getLoc(e) {
             // canvas 为你的 canvas ctx 变量
             const box = canvas.getBoundingClientRect()
-            const mouseX = (e.clientX - box.left) * canvas.width / box.width
-            const mouseY = (e.clientY - box.top) * canvas.height / box.height
+            const mouseX = (e.clientX - box.left) * canvas.width / box.width;
+            const mouseY = (e.clientY - box.top) * canvas.height / box.height;
             return [mouseX, mouseY]
         }
 
-        let isMouseDown = false
+        let isMouseDown = false;
 
         /**
          * 当鼠标点击时，绘制路径
@@ -60,9 +60,6 @@
             context.closePath();
             isMouseDown = false;
         }
-
-
-
 
 
     }
