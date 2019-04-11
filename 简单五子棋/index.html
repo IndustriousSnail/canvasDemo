@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <canvas id="canvas" style="border: 1px black solid;"></canvas>
+</body>
+</html>
+<script>
+    window.onload = function () {
+        const WIDTH = 768;
+        const HEIGHT = 1024;
+
+        const canvas = document.getElementById('canvas');
+        canvas.width = WIDTH;
+        canvas.height = HEIGHT;
+        const context = canvas.getContext('2d');
+        if (!context) {
+            alert('当前浏览器不支持canvas');
+            return;
+        }
+
+        /**
+         * 绘制棋盘
+         */
+        function drawChessboard() {
+            context.beginPath();
+            const xOffset = 50;
+            const yOffset = 200;
+            const intervalWidth = 45;
+            context.moveTo(xOffset, yOffset);
+
+            for (let i=0;i<15;i++){
+                context.moveTo(xOffset+i*intervalWidth, yOffset);
+                context.lineTo(xOffset+i*intervalWidth, yOffset+14*intervalWidth);
+            }
+
+            for (let i=0;i<15;i++){
+                context.moveTo(xOffset, yOffset+i*intervalWidth);
+                context.lineTo(xOffset+14*intervalWidth, yOffset+i*intervalWidth);
+            }
+
+            context.stroke();
+        }
+
+        drawChessboard();
+
+        /**
+         * 绘制棋子
+         * @param x x坐标
+         * @param y y坐标
+         * @param isBlack 是否是黑子
+         */
+        function drawPiece(x,y,isBlack) {
+            const pieceR = 17;
+            context.beginPath();
+            context.arc(x,y,pieceR,0,2*Math.PI);
+            if (isBlack){
+                context.fillStyle = 'black'
+            } else {
+                context.fillStyle = '#aaa'
+            }
+            context.strokeStyle = 'black'
+            context.stroke();
+            context.fill();
+        }
+
+        drawPiece(40,40,false);
+
+    }
+</script>
